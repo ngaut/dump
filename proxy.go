@@ -154,28 +154,25 @@ func (logger *HttpLogger) LogResp(resp *http.Response, ctx *goproxy.ProxyCtx) {
 		return
 	}
 
-	log.Print(ct)
-
-	excludeTbl := []string{"text", "json", "pdf", "doc"}
+	excludeTbl := []string{"text", "json", "pdf", "doc", "javascript", "image/", "xml"}
 
 	for _, key := range excludeTbl {
-		if strings.Index(ct, key) >= 0 {
+		if strings.Index(strings.ToLower(ct), key) >= 0 {
 			return
 		}
 	}
 
-	lengthStr := resp.Header.Get("Content-Length")
+	lengthStr := resp.Header.Get("Content-Length") + resp.Header.Get("content-length")
 	if length, err := strconv.Atoi(lengthStr); err == nil && length < 512*1024 {
 		return
 	}
+
+	log.Print("=========>", ct, lengthStr)
 
 	name := guessFileName(ctx.Req.URL.String())
 
 	body := path.Join(logger.path, fmt.Sprintf("%s", name))
 	from := ""
-	if ctx.RoundTrip != nil {
-		from = ctx.RoundTrip.TCPAddr.String()
-	}
 	if resp == nil {
 		resp = emptyResp
 	} else {
