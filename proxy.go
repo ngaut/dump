@@ -154,7 +154,7 @@ func (logger *HttpLogger) LogResp(resp *http.Response, ctx *goproxy.ProxyCtx) {
 		return
 	}
 
-	excludeTbl := []string{"text", "json", "pdf", "doc", "javascript", "image/", "xml"}
+	excludeTbl := []string{"text", "json", "pdf", "doc", "javascript", "image/", "xml", "pkis", "ocsp"}
 
 	for _, key := range excludeTbl {
 		if strings.Index(strings.ToLower(ct), key) >= 0 {
